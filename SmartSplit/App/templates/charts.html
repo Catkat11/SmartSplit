@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ group.name }} - Charts</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.0.0"></script>
+    <style>
+        canvas {
+            max-width: 100%;
+            height: auto;
+        }
+
+        .btn-back {
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container mt-5">
+        <h1>Charts for {{ group.name }}</h1>
+        <hr>
+
+        <!-- Group Section -->
+        <h2>Group Expenses (only in PLN)</h2>
+        <div class="row mb-4">
+            <div class="col-6">
+                <canvas id="groupMonthlyExpenses" width="400" height="400"></canvas>
+            </div>
+            <div class="col-6">
+                <canvas id="groupCategoryExpenses" width="400" height="400"></canvas>
+            </div>
+        </div>
+
+        <!-- User Section -->
+        <h2>Your Expenses (only in PLN)</h2>
+        <div class="row mb-4">
+            <div class="col-6">
+                <canvas id="userMonthlyExpenses" width="400" height="400"></canvas>
+            </div>
+            <div class="col-6">
+                <canvas id="userCategoryExpenses" width="400" height="400"></canvas>
+            </div>
+        </div>
+        <div class="mt-4 text-center">
+            <a href="{{ url_for('view_group', group_id=group.id) }}" class="btn btn-secondary btn-md">Back to Group</a>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            fetch(`/charts_data/{{ group.id }}`).then(response => response.json()).then(data => {
+                renderGroupCharts(data.groupData);
+                renderUserCharts(data.userData);
+            });
+        });
+
+        function renderGroupCharts(data) {
+            new Chart(document.getElementById('groupMonthlyExpenses'), {
+                type: 'bar',
+                data: {
+                    labels: data.monthly.labels,
+                    datasets: [{
+                        label: 'Monthly Expenses',
+                        data: data.monthly.values,
+                        backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                        borderColor: 'rgba(75, 192, 192, 1)',
+                        borderWidth: 1,
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    scales: {
+                        y: {
+                            beginAtZero: true
+                        }
+                    },
+                    plugins: {
+                        tooltip: {
+                            callbacks: {
+                                label: function (context) {
+                                    return context.dataset.label + ': ' + context.raw + ' PLN';
+                                }
+                            }
+                        },
+                        datalabels: {
+                            color: '#000',
+                            anchor: 'end',
+                            align: 'top',
+                            formatter: function(value) {
+                                return value + ' PLN';
+                            }
+                        }
+                    }
+                },
+                plugins: [ChartDataLabels]
+            });
+
+            new Chart(document.getElementById('groupCategoryExpenses'), {
+                type: 'pie',
+                data: {
+                    labels: data.categories.labels,
+                    datasets: [{
+                        label: 'Category Distribution',
+                        data: data.categories.values,
+                        backgroundColor: ['#ff6384', '#36a2eb', '#cc65fe', '#ffce56']
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        tooltip: {
+                            callbacks: {
+                                label: function (context) {
+                                    return context.label + ': ' + context.raw + ' PLN';
+                                }
+                            }
+                        },
+                        legend: {
+                            position: 'top'
+                        },
+                        datalabels: {
+                            color: '#fff',
+                            formatter: function(value) {
+                                return value + ' PLN';
+                            }
+                        }
+                    }
+                },
+                plugins: [ChartDataLabels]
+            });
+        }
+
+        function renderUserCharts(data) {
+            new Chart(document.getElementById('userMonthlyExpenses'), {
+                type: 'bar',
+                data: {
+                    labels: data.monthly.labels,
+                    datasets: [{
+                        label: 'Your Monthly Expenses',
+                        data: data.monthly.values,
+                        backgroundColor: 'rgba(153, 102, 255, 0.2)',
+                        borderColor: 'rgba(153, 102, 255, 1)',
+                        borderWidth: 1,
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    scales: {
+                        y: {
+                            beginAtZero: true
+                        }
+                    },
+                    plugins: {
+                        tooltip: {
+                            callbacks: {
+                                label: function (context) {
+                                    return context.dataset.label + ': ' + context.raw + ' PLN';
+                                }
+                            }
+                        },
+                        datalabels: {
+                            color: '#000',
+                            anchor: 'end',
+                            align: 'top',
+                            formatter: function(value) {
+                                return value + ' PLN';
+                            }
+                        }
+                    }
+                },
+                plugins: [ChartDataLabels]
+            });
+
+            new Chart(document.getElementById('userCategoryExpenses'), {
+                type: 'pie',
+                data: {
+                    labels: data.categories.labels,
+                    datasets: [{
+                        label: 'Your Category Distribution',
+                        data: data.categories.values,
+                        backgroundColor: ['#ff9f40', '#ff6384', '#36a2eb', '#cc65fe']
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        tooltip: {
+                            callbacks: {
+                                label: function (context) {
+                                    return context.label + ': ' + context.raw + ' PLN';
+                                }
+                            }
+                        },
+                        legend: {
+                            position: 'top'
+                        },
+                        datalabels: {
+                            color: '#fff',
+                            formatter: function(value) {
+                                return value + ' PLN';
+                            }
+                        }
+                    }
+                },
+                plugins: [ChartDataLabels]
+            });
+        }
+    </script>
+</body>
+</html>

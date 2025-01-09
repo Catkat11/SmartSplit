@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Create Group</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <style>
+        body {
+            background-color: #f8f9fa;
+        }
+        .container {
+            max-width: 600px;
+            margin-top: 50px;
+        }
+        .form-group label {
+            font-weight: bold;
+        }
+        .btn-primary {
+            background-color: #007bff;
+            border-color: #007bff;
+            width: 100%;
+        }
+        .back-link {
+            display: block;
+            margin-top: 15px;
+            text-align: center;
+        }
+        .flash-messages {
+            margin-top: 15px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1 class="text-center mb-4">Create a Group</h1>
+
+        <form method="POST">
+            <div class="form-group">
+                <label for="group_name">Group Name:</label>
+                <input type="text" class="form-control" name="group_name" id="group_name" required>
+            </div>
+
+            <h2 class="h5 font-weight-bold mt-4">Select Friends to Add to Group:</h2>
+            <div class="form-check">
+                {% for friend in friends %}
+                    <input type="checkbox" class="form-check-input" name="friends" value="{{ friend.id }}" id="friend{{ friend.id }}">
+                    <label class="form-check-label" for="friend{{ friend.id }}">{{ friend.username }}</label><br>
+                {% endfor %}
+            </div>
+
+            <button type="submit" class="btn btn-primary mt-4">Create Group</button>
+        </form>
+
+        <a href="{{ url_for('user_dashboard') }}" class="back-link text-primary">Back to Dashboard</a>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.2/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+</html>
